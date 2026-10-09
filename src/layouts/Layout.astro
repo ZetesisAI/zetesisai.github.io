@@ -1,6 +1,7 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Starfield from '../components/Starfield.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -10,20 +11,21 @@ interface Props {
 }
 
 const {
-  title = 'Zetesis AI - 探索下一代智能体与自主系统',
-  description = 'Zetesis AI 是专注于自主智能体推理框架、代码智能检索与严谨模型评估的开源研发组织。',
-  image = '/favicon.svg',
+  title = 'Zetesis AI — Autonomous Intelligence & Multi-Agent Systems',
+  description = 'Zetesis AI is an open research and engineering collective pioneering deterministic multi-agent coordination, code cartography, and empirical AI evaluation.',
+  image = '/logo-512.png',
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/logo-192.png" />
     <meta name="generator" content={Astro.generator} />
 
     <!-- Canonical URL -->
@@ -33,7 +35,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <title>{title}</title>
     <meta name="title" content={title} />
     <meta name="description" content={description} />
-    <meta name="keywords" content="Zetesis AI, AI Agent, LLM, 智能体架构, 知识检索, 模型评测, 开源框架" />
+    <meta name="keywords" content="Zetesis AI, AI Agents, Multi-Agent Systems, Autonomous Coding, AST RAG, LLM Benchmark, Open Source AI" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -52,20 +54,16 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <!-- Sitemap Link -->
     <link rel="sitemap" href="/sitemap-index.xml" />
   </head>
-  <body class="bg-[#080c14] text-slate-100 flex flex-col min-h-screen antialiased selection:bg-indigo-500/30 selection:text-white">
-    <!-- Global subtle background glow decoration -->
-    <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-      <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-tr from-indigo-600/15 via-purple-600/10 to-cyan-500/15 blur-[120px] rounded-full"></div>
-      <div class="absolute bottom-10 right-10 w-[500px] h-[300px] bg-blue-600/5 blur-[140px] rounded-full"></div>
-    </div>
+  <body class="bg-[#02040a] text-slate-100 flex flex-col min-h-screen antialiased selection:bg-cyan-500/25 selection:text-white relative">
+    <!-- Starfield canvas background -->
+    <Starfield />
 
     <Header />
 
-    <main class="flex-1">
+    <main class="flex-1 relative z-10">
       <slot />
     </main>
 
     <Footer />
   </body>
 </html>
-

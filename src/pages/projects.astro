@@ -9,21 +9,21 @@ const sortedProjects = allProjects.sort((a, b) => a.data.order - b.data.order);
 ---
 
 <Layout
-  title="项目矩阵 - Zetesis AI"
-  description="浏览 Zetesis AI 开源项目矩阵，涵盖智能体调度平台、知识引擎及评估测试集。"
+  title="Architectures & Case Studies — Zetesis AI"
+  description="Explore the Zetesis AI open-source systems matrix spanning multi-agent orchestration, knowledge engines, and empirical evaluation suites."
 >
-  <div class="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="py-20 md:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <!-- Header -->
     <div class="max-w-3xl mb-16">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-cyan-300 mb-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium bg-white/[0.04] border border-cyan-500/20 text-cyan-300 mb-4">
         <Layers class="w-3.5 h-3.5" />
-        <span>开源软件与工具库</span>
+        <span>Systems & Architectures</span>
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
-        项目矩阵 (Project Matrix)
+        Architectures & Case Studies
       </h1>
-      <p class="text-lg text-slate-400 leading-relaxed font-light">
-        Zetesis AI 致力于开发高可靠、高确定性的人工智能工程底座。所有项目均秉持开源与可重现原则设计。
+      <p class="text-base sm:text-lg text-slate-400 leading-relaxed font-light">
+        Explore how each core system within the Zetesis collective is architected for deterministic execution, reproducibility, and high-performance developer workflows.
       </p>
     </div>
 
@@ -43,4 +43,3 @@ const sortedProjects = allProjects.sort((a, b) => a.data.order - b.data.order);
     </div>
   </div>
 </Layout>
-

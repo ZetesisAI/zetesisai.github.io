@@ -1,0 +1,214 @@
+---
+// Starfield cosmic background component
+---
+
+<div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden bg-[#030712]">
+  <!-- Deep Cosmic Ambient Nebulae -->
+  <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-b from-indigo-900/20 via-purple-900/15 to-transparent blur-[140px] rounded-full"></div>
+  <div class="absolute top-1/3 -left-40 w-[600px] h-[600px] bg-cyan-950/15 blur-[160px] rounded-full"></div>
+  <div class="absolute top-2/3 -right-40 w-[700px] h-[600px] bg-blue-950/15 blur-[160px] rounded-full"></div>
+  <div class="absolute -bottom-20 left-1/3 w-[800px] h-[400px] bg-indigo-950/10 blur-[150px] rounded-full"></div>
+
+  <!-- Cosmic Canvas -->
+  <canvas id="starfield-canvas" class="absolute inset-0 w-full h-full"></canvas>
+</div>
+
+<script>
+  function initStarfield() {
+    const canvas = document.getElementById('starfield-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let animationFrameId: number;
+
+    interface Star {
+      x: number;
+      y: number;
+      radius: number;
+      baseAlpha: number;
+      alpha: number;
+      twinkleSpeed: number;
+      twinkleOffset: number;
+      color: string;
+      vx: number;
+      vy: number;
+    }
+
+    interface ShootingStar {
+      x: number;
+      y: number;
+      length: number;
+      speed: number;
+      angle: number;
+      alpha: number;
+      active: boolean;
+    }
+
+    const starColors = [
+      '#ffffff',
+      '#f8fafc',
+      '#e0e7ff', // slight indigo tint
+      '#cffafe', // slight cyan tint
+      '#fef3c7', // slight warm stellar tint
+    ];
+
+    let stars: Star[] = [];
+    let shootingStar: ShootingStar = {
+      x: 0,
+      y: 0,
+      length: 0,
+      speed: 0,
+      angle: 0,
+      alpha: 0,
+      active: false,
+    };
+
+    function resize() {
+      if (!canvas) return;
+      width = window.innerWidth;
+      height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx?.scale(dpr, dpr);
+      createStars();
+    }
+
+    function createStars() {
+      stars = [];
+      // Adjust star density according to screen size
+      const count = Math.floor((width * height) / 3800);
+      for (let i = 0; i < count; i++) {
+        const radius = Math.random() < 0.85 ? Math.random() * 0.9 + 0.3 : Math.random() * 1.5 + 1.2;
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius,
+          baseAlpha: Math.random() * 0.7 + 0.2,
+          alpha: 0.5,
+          twinkleSpeed: Math.random() * 0.02 + 0.005,
+          twinkleOffset: Math.random() * Math.PI * 2,
+          color: starColors[Math.floor(Math.random() * starColors.length)],
+          vx: (Math.random() - 0.5) * 0.04,
+          vy: (Math.random() - 0.5) * 0.04,
+        });
+      }
+    }
+
+    function spawnShootingStar() {
+      if (shootingStar.active) return;
+      if (Math.random() < 0.004) { // small probability per frame
+        shootingStar = {
+          x: Math.random() * width * 0.8 + width * 0.1,
+          y: Math.random() * height * 0.4,
+          length: Math.random() * 80 + 60,
+          speed: Math.random() * 8 + 10,
+          angle: (Math.PI / 4) + (Math.random() - 0.5) * 0.3,
+          alpha: 1,
+          active: true,
+        };
+      }
+    }
+
+    let lastTime = 0;
+
+    function render(time: number) {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, width, height);
+
+      // Render static & twinkling stars
+      for (let i = 0; i < stars.length; i++) {
+        const star = stars[i];
+
+        // Drift slowly
+        star.x += star.vx;
+        star.y += star.vy;
+        if (star.x < 0) star.x = width;
+        if (star.x > width) star.x = 0;
+        if (star.y < 0) star.y = height;
+        if (star.y > height) star.y = 0;
+
+        // Twinkle calculation
+        const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
+        star.alpha = Math.max(0.1, Math.min(1, star.baseAlpha + twinkle * 0.35));
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = star.color;
+        ctx.globalAlpha = star.alpha;
+        ctx.fill();
+
+        // Extra soft glow for brighter, larger stars
+        if (star.radius > 1.2 && star.alpha > 0.6) {
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.radius * 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = star.color;
+          ctx.globalAlpha = star.alpha * 0.15;
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // Handle shooting star
+      spawnShootingStar();
+      if (shootingStar.active) {
+        ctx.save();
+        const tailX = shootingStar.x - Math.cos(shootingStar.angle) * shootingStar.length;
+        const tailY = shootingStar.y - Math.sin(shootingStar.angle) * shootingStar.length;
+
+        const grad = ctx.createLinearGradient(tailX, tailY, shootingStar.x, shootingStar.y);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        grad.addColorStop(0.7, `rgba(200, 230, 255, ${shootingStar.alpha * 0.5})`);
+        grad.addColorStop(1, `rgba(255, 255, 255, ${shootingStar.alpha})`);
+
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(shootingStar.x, shootingStar.y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        shootingStar.x += Math.cos(shootingStar.angle) * shootingStar.speed;
+        shootingStar.y += Math.sin(shootingStar.angle) * shootingStar.speed;
+        shootingStar.alpha -= 0.015;
+
+        if (
+          shootingStar.alpha <= 0 ||
+          shootingStar.x > width + 100 ||
+          shootingStar.y > height + 100
+        ) {
+          shootingStar.active = false;
+        }
+        ctx.restore();
+      }
+
+      animationFrameId = requestAnimationFrame(render);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    animationFrameId = requestAnimationFrame(render);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animationFrameId);
+      } else {
+        animationFrameId = requestAnimationFrame(render);
+      }
+    });
+  }
+
+  // Run on page load
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initStarfield();
+  } else {
+    document.addEventListener('DOMContentLoaded', initStarfield);
+  }
+</script>
+

@@ -1,33 +1,32 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { Home, ArrowLeft } from '@lucide/astro';
+import { Home } from '@lucide/astro';
 ---
 
 <Layout
-  title="页面未找到 - Zetesis AI"
-  description="抱歉，您访问的页面不存在。"
+  title="Page Not Found — Zetesis AI"
+  description="The requested page could not be found."
 >
-  <div class="min-h-[60vh] flex items-center justify-center px-4 py-24 text-center">
+  <div class="min-h-[65vh] flex items-center justify-center px-4 py-24 text-center">
     <div class="max-w-md mx-auto space-y-6">
-      <div class="inline-flex p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+      <div class="inline-flex p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.15)]">
         <span class="text-4xl font-extrabold font-mono">404</span>
       </div>
 
-      <h1 class="text-3xl font-bold text-white tracking-tight">页面未找到</h1>
-      <p class="text-sm text-slate-400 leading-relaxed">
-        您请求的页面可能已移动、更名或暂时不可用。
+      <h1 class="text-3xl font-bold text-white tracking-tight">Cosmic Void — Page Not Found</h1>
+      <p class="text-xs sm:text-sm text-slate-400 leading-relaxed font-light">
+        The coordinates you requested do not correspond to any known entity in the Zetesis cosmos.
       </p>
 
       <div class="pt-2">
         <a
           href="/"
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-medium text-sm hover:opacity-90 transition-opacity"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-semibold text-xs tracking-wide hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] transition-all hover:scale-[1.02]"
         >
-          <Home class="w-4 h-4" />
-          <span>返回首页</span>
+          <Home class="w-3.5 h-3.5" />
+          <span>Return to Orbit</span>
         </a>
       </div>
     </div>
   </div>
 </Layout>
-

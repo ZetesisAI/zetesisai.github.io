@@ -2,15 +2,15 @@
 
 @layer base {
   :root {
-    --color-bg-primary: #090d16;
-    --color-bg-secondary: #0f172a;
-    --color-bg-card: rgba(15, 23, 42, 0.75);
-    --color-border-subtle: rgba(255, 255, 255, 0.08);
+    --color-cosmos-void: #02040a;
+    --color-cosmos-deep: #050814;
+    --color-starlight: #f8fafc;
+    --color-starlight-dim: #94a3b8;
   }
 
   html {
     color-scheme: dark;
-    background-color: #080c14;
+    background-color: #02040a;
     color: #f1f5f9;
     scroll-behavior: smooth;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -19,34 +19,69 @@
   body {
     min-height: 100vh;
     overflow-x: hidden;
+    background-color: #02040a;
   }
 
   ::selection {
-    background-color: rgba(99, 102, 241, 0.35);
+    background-color: rgba(56, 189, 248, 0.25);
     color: #ffffff;
   }
 }
 
-/* Custom glow utility and glassmorphism helpers */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Celestial Glass Panels */
+.celestial-card {
+  background: rgba(8, 14, 28, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glass-panel:hover {
-  border-color: rgba(99, 102, 241, 0.3);
+.celestial-card:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 8px 32px rgba(6, 182, 212, 0.12), 0 0 16px rgba(99, 102, 241, 0.08);
+  transform: translateY(-2px);
 }
 
-.text-gradient {
-  background: linear-gradient(135deg, #60a5fa 0%, #a855f7 50%, #38bdf8 100%);
+/* Starlight Gradients */
+.text-celestial {
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 40%, #7dd3fc 75%, #a5b4fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.text-gradient-purple {
-  background: linear-gradient(135deg, #c084fc 0%, #6366f1 100%);
+.text-gold-starlight {
+  background: linear-gradient(135deg, #ffffff 0%, #fef08a 45%, #f59e0b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Orbit & Pulse Animations */
+@keyframes celestial-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes celestial-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.04);
+  }
+}
+
+.animate-celestial-orbit {
+  animation: celestial-orbit 40s linear infinite;
+}
+
+.animate-celestial-pulse {
+  animation: celestial-pulse 6s ease-in-out infinite;
 }

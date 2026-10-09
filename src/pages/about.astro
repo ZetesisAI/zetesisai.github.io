@@ -1,89 +1,89 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { Compass, Lightbulb, Shield, Code, Users, Mail } from '@lucide/astro';
+import { Compass, Lightbulb, Shield, Code, Users } from '@lucide/astro';
 import Github from '../components/icons/Github.astro';
 ---
 
 <Layout
-  title="关于我们 - Zetesis AI"
-  description="了解 Zetesis AI 的组织起源、使命愿景以及我们对下一代人工智能系统的思考。"
+  title="About — Zetesis AI"
+  description="Discover the origin, philosophy, and engineering principles behind Zetesis AI."
 >
-  <div class="py-16 md:py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
+  <div class="py-20 md:py-28 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
     <!-- Header -->
     <div class="text-center max-w-3xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-cyan-300 mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium bg-white/[0.04] border border-cyan-500/20 text-cyan-300 mb-6">
         <Compass class="w-3.5 h-3.5" />
-        <span>使命与理念</span>
+        <span>Philosophy & Origin</span>
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-6">
-        关于 Zetesis AI
+        About Zetesis AI
       </h1>
-      <p class="text-lg text-slate-300 font-light leading-relaxed">
-        “Zetesis”（ζήτησις）源于古希腊语，意为“探索、求索、反思与批判性探究”。
-        在人工智能迅速演进的浪潮中，我们坚持以科学求索精神，构建透明、可靠、可控的智能体基座。
+      <p class="text-base sm:text-lg text-slate-300 font-light leading-relaxed">
+        The name <strong class="text-white font-medium">Zetesis</strong> (<em class="text-cyan-300">ζήτησις</em>) originates from classical Greek philosophy, signifying relentless, methodical inquiry and the unyielding pursuit of empirical truth.
+        In an era of rapid AI proliferation, we adhere to the scientific ethos: engineering transparent, controllable, and deterministic foundations for autonomous intelligence.
       </p>
     </div>
 
     <!-- Vision & Mission Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="p-8 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-indigo-500/30 transition-all">
-        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6">
-          <Lightbulb class="w-6 h-6" />
+      <div class="celestial-card p-8 rounded-2xl">
+        <div class="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-300 mb-6 shadow-[0_0_12px_rgba(99,102,241,0.2)]">
+          <Lightbulb class="w-5 h-5" />
         </div>
-        <h2 class="text-xl font-bold text-white mb-3">我们的愿景</h2>
-        <p class="text-sm text-slate-400 leading-relaxed">
-          我们相信未来的软件工程与科学研究将由人类与自主智能体深度协同完成。通过构建模块化、确定性的调度逻辑与透明可解释的状态流，赋予开发者掌控复杂智能体系统的能力。
+        <h2 class="text-xl font-bold text-white mb-3">Our Vision</h2>
+        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed font-light">
+          We envision a future where complex software engineering, scientific discovery, and operational workflows are accomplished through seamless collaboration between human experts and autonomous agent collectives. By developing modular orchestration protocols and verifiable state machines, we give creators true determinism over agent behavior.
         </p>
       </div>
 
-      <div class="p-8 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-cyan-500/30 transition-all">
-        <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6">
-          <Shield class="w-6 h-6" />
+      <div class="celestial-card p-8 rounded-2xl">
+        <div class="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-300 mb-6 shadow-[0_0_12px_rgba(6,182,212,0.2)]">
+          <Shield class="w-5 h-5" />
         </div>
-        <h2 class="text-xl font-bold text-white mb-3">工程准则</h2>
-        <p class="text-sm text-slate-400 leading-relaxed">
-          坚持“可重现性”、“严谨评估”与“代码即规范”。我们拒绝将未知黑盒作为生产系统的依赖，每一个智能体决策链条均应具备完整的日志审计与回溯测试支持。
+        <h2 class="text-xl font-bold text-white mb-3">Engineering Principles</h2>
+        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed font-light">
+          We reject treating black-box outputs as production-grade truth. Every decision boundary, tool invocation, and memory transition must offer complete audit logs, replay capability, and automated regression testing.
         </p>
       </div>
     </div>
 
-    <!-- Values / What We Do -->
-    <div class="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-white/[0.03] to-white/[0.01] border border-white/10">
-      <h2 class="text-2xl font-bold text-white mb-6">核心研究与研发方向</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <!-- Core Research Directions -->
+    <div class="celestial-card p-8 sm:p-12 rounded-3xl">
+      <h2 class="text-2xl font-bold text-white mb-6">Core Research & Engineering Thrusts</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
         <div class="space-y-2">
-          <h3 class="font-semibold text-cyan-300 text-base">智能体编排与记忆</h3>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            长程规划、分层任务解耦、多 Agent 协作博弈与图结构工作流引擎。
+          <h3 class="font-semibold text-cyan-300 text-sm font-mono uppercase tracking-wider">Swarm Coordination</h3>
+          <p class="text-xs text-slate-400 leading-relaxed font-light">
+            Long-horizon planning, hierarchical task decomposition, multi-agent game-theoretic negotiations, and graph-structured state workflows.
           </p>
         </div>
         <div class="space-y-2">
-          <h3 class="font-semibold text-indigo-300 text-base">代码智能与 AST RAG</h3>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            深度理解程序语法、调用拓扑及语义流，实现精准的代码级检索与生成。
+          <h3 class="font-semibold text-indigo-300 text-sm font-mono uppercase tracking-wider">AST-Native Code RAG</h3>
+          <p class="text-xs text-slate-400 leading-relaxed font-light">
+            Deep syntactic parsing, call-graph topology indexing, and semantic flow modeling for precise monorepo code generation.
           </p>
         </div>
         <div class="space-y-2">
-          <h3 class="font-semibold text-purple-300 text-base">鲁棒性与基准验证</h3>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            自动化对抗测试、安全沙盒隔离与多维度任务完成度客观量化。
+          <h3 class="font-semibold text-purple-300 text-sm font-mono uppercase tracking-wider">Empirical Verification</h3>
+          <p class="text-xs text-slate-400 leading-relaxed font-light">
+            Automated red-teaming, zero-trust sandbox execution, and objective multi-turn task completion benchmarking.
           </p>
         </div>
       </div>
     </div>
 
     <!-- Contact & Connect -->
-    <div class="text-center space-y-6 pt-4">
-      <h2 class="text-2xl font-bold text-white">联系与加入讨论</h2>
-      <p class="text-slate-400 text-sm max-w-lg mx-auto">
-        欢迎在 GitHub 提交 Issue、Pull Request 或加入我们的开发者讨论。
+    <div class="text-center space-y-6 pt-6">
+      <h2 class="text-2xl font-bold text-white">Join the Community</h2>
+      <p class="text-slate-400 text-xs sm:text-sm max-w-md mx-auto font-light">
+        We welcome researchers, system architects, and open-source contributors to collaborate on GitHub.
       </p>
       <div class="flex items-center justify-center gap-4">
         <a
           href="https://github.com/ZetesisAI"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-medium transition-colors"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-cyan-400/40 text-white text-xs font-semibold tracking-wide transition-all hover:scale-[1.02]"
         >
           <Github class="w-4 h-4" />
           <span>GitHub / ZetesisAI</span>
