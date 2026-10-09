@@ -1,0 +1,156 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+import { Calendar, ArrowLeft, User, Tag } from '@lucide/astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const formattedDate = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(post.data.pubDate);
+---
+
+<Layout
+  title={`${post.data.title} - Zetesis AI`}
+  description={post.data.description}
+>
+  <article class="py-16 md:py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Back Button -->
+    <a
+      href="/blog"
+      class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-cyan-300 transition-colors mb-10 group"
+    >
+      <ArrowLeft class="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+      <span>返回文章列表</span>
+    </a>
+
+    <!-- Header -->
+    <header class="mb-12 pb-8 border-b border-white/10">
+      <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400 mb-4">
+        <div class="flex items-center gap-1.5">
+          <Calendar class="w-3.5 h-3.5 text-cyan-400" />
+          <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
+        </div>
+        <span>•</span>
+        <div class="flex items-center gap-1.5">
+          <User class="w-3.5 h-3.5 text-indigo-400" />
+          <span>{post.data.author}</span>
+        </div>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-6">
+        {post.data.title}
+      </h1>
+
+      <p class="text-lg text-slate-300 font-light leading-relaxed">
+        {post.data.description}
+      </p>
+
+      <div class="flex flex-wrap gap-2 mt-6">
+        {post.data.tags.map((tag) => (
+          <span class="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300">
+            #{tag}
+          </span>
+        ))}
+      </div>
+    </header>
+
+    <!-- Post Markdown Content -->
+    <div class="article-content space-y-6 text-slate-300 text-base leading-relaxed">
+      <Content />
+    </div>
+  </article>
+</Layout>
+
+<style is:global>
+  .article-content h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+  }
+  .article-content h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .article-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .article-content p {
+    margin-bottom: 1.25rem;
+    line-height: 1.8;
+  }
+  .article-content ul, .article-content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1.25rem;
+    list-style-type: disc;
+  }
+  .article-content ol {
+    list-style-type: decimal;
+  }
+  .article-content li {
+    margin-bottom: 0.5rem;
+  }
+  .article-content code {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.375rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.875em;
+    color: #38bdf8;
+  }
+  .article-content pre {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+  .article-content pre code {
+    background: transparent;
+    padding: 0;
+    color: #f8fafc;
+  }
+  .article-content strong {
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .article-content a {
+    color: #38bdf8;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .article-content a:hover {
+    color: #67e8f9;
+  }
+  .article-content blockquote {
+    border-left: 3px solid #6366f1;
+    padding-left: 1rem;
+    font-style: italic;
+    color: #94a3b8;
+    margin: 1.5rem 0;
+  }
+</style>
+

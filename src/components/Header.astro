@@ -1,0 +1,128 @@
+---
+import { Menu, X, Sparkles } from '@lucide/astro';
+import Github from './icons/Github.astro';
+
+const navItems = [
+  { name: '首页', href: '/' },
+  { name: '项目矩阵', href: '/projects' },
+  { name: '动态与研究', href: '/blog' },
+  { name: '关于我们', href: '/about' },
+];
+
+const pathname = new URL(Astro.request.url).pathname;
+---
+
+<header class="sticky top-0 z-50 w-full border-b border-white/10 bg-[#090d16]/80 backdrop-blur-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-400 p-[1.5px] transition-transform duration-300 group-hover:scale-105">
+          <div class="w-full h-full bg-[#090d16] rounded-[7px] flex items-center justify-center">
+            <span class="font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-cyan-400 text-lg">Z</span>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-lg font-bold tracking-tight text-white group-hover:text-cyan-300 transition-colors">
+            Zetesis<span class="text-indigo-400 font-light">AI</span>
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-1">
+        {navItems.map((item) => {
+          const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+          return (
+            <a
+              href={item.href}
+              class={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                isActive
+                  ? 'text-cyan-300 bg-white/5 border border-cyan-500/20 shadow-[0_0_12px_rgba(6,182,212,0.15)]'
+                  : 'text-slate-300 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              {item.name}
+            </a>
+          );
+        })}
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="hidden md:flex items-center gap-3">
+        <a
+          href="https://github.com/ZetesisAI"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all hover:scale-[1.02]"
+        >
+          <Github class="w-4 h-4" />
+          <span>GitHub</span>
+        </a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="flex md:hidden">
+        <button
+          type="button"
+          id="mobile-menu-btn"
+          aria-label="切换菜单"
+          class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 focus:outline-none"
+        >
+          <Menu id="icon-menu" class="w-6 h-6" />
+          <X id="icon-close" class="w-6 h-6 hidden" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Dropdown -->
+  <div id="mobile-menu" class="hidden md:hidden border-b border-white/10 bg-[#090d16]/95 backdrop-blur-xl px-4 pt-2 pb-4 space-y-2">
+    {navItems.map((item) => {
+      const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+      return (
+        <a
+          href={item.href}
+          class={`block px-3 py-2 rounded-lg text-base font-medium transition-colors ${
+            isActive ? 'text-cyan-300 bg-white/10' : 'text-slate-300 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          {item.name}
+        </a>
+      );
+    })}
+    <div class="pt-2 border-t border-white/10">
+      <a
+        href="https://github.com/ZetesisAI"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-slate-200 bg-white/5"
+      >
+        <Github class="w-5 h-5" />
+        <span>GitHub 组织</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const iconMenu = document.getElementById('icon-menu');
+  const iconClose = document.getElementById('icon-close');
+
+  if (btn && menu && iconMenu && iconClose) {
+    btn.addEventListener('click', () => {
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        iconMenu.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+      } else {
+        menu.classList.add('hidden');
+        iconMenu.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+      }
+    });
+  }
+</script>

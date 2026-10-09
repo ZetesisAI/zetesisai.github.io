@@ -1,0 +1,47 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+import { BookOpen } from '@lucide/astro';
+
+const allPosts = await getCollection('blog');
+const publishedPosts = allPosts
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+
+<Layout
+  title="动态与研究 - Zetesis AI"
+  description="阅读 Zetesis AI 团队的最新研究报告、架构剖析与工程实践日志。"
+>
+  <div class="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="max-w-3xl mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-indigo-400 mb-4">
+        <BookOpen class="w-3.5 h-3.5" />
+        <span>文章与研究洞察</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
+        动态与思考 (Articles & Research)
+      </h1>
+      <p class="text-lg text-slate-400 leading-relaxed font-light">
+        深入记录我们在智能体系统演进、模型对齐与可信工程落地过程中的真实反思与实验数据。
+      </p>
+    </div>
+
+    <!-- Posts Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {publishedPosts.map((post) => (
+        <BlogCard
+          title={post.data.title}
+          description={post.data.description}
+          pubDate={post.data.pubDate}
+          author={post.data.author}
+          tags={post.data.tags}
+          slug={post.id}
+        />
+      ))}
+    </div>
+  </div>
+</Layout>
+

@@ -1,0 +1,62 @@
+---
+import { Calendar, Tag, ArrowRight } from '@lucide/astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  author: string;
+  tags: string[];
+  slug: string;
+}
+
+const { title, description, pubDate, author, tags, slug } = Astro.props;
+
+const formattedDate = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+}).format(pubDate);
+---
+
+<article class="group p-6 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-cyan-500/30 hover:bg-white/[0.04] transition-all duration-300 flex flex-col justify-between">
+  <div>
+    <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400 mb-3">
+      <div class="flex items-center gap-1">
+        <Calendar class="w-3.5 h-3.5 text-slate-500" />
+        <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+      </div>
+      <span>•</span>
+      <span>{author}</span>
+    </div>
+
+    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+      <a href={`/blog/${slug}`}>
+        {title}
+      </a>
+    </h3>
+
+    <p class="text-sm text-slate-400 leading-relaxed mb-6 line-clamp-2">
+      {description}
+    </p>
+  </div>
+
+  <div class="pt-4 border-t border-white/5 flex items-center justify-between">
+    <div class="flex flex-wrap gap-1.5">
+      {tags.slice(0, 2).map((tag) => (
+        <span class="text-[11px] px-2 py-0.5 rounded-md bg-white/5 text-slate-300">
+          #{tag}
+        </span>
+      ))}
+    </div>
+
+    <a
+      href={`/blog/${slug}`}
+      class="inline-flex items-center gap-1 text-xs font-medium text-cyan-400 group-hover:text-cyan-300"
+    >
+      <span>阅读全文</span>
+      <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+    </a>
+  </div>
+</article>
+

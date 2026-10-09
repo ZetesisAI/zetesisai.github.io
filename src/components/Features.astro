@@ -1,0 +1,81 @@
+---
+import { Bot, Network, ShieldCheck, Cpu, Code2, Layers } from '@lucide/astro';
+
+const features = [
+  {
+    icon: Bot,
+    title: '自主智能体架构',
+    description: '支持分层规划、长程上下文记忆、异步事件流调度与确定性执行状态机。',
+    tag: 'Orchestration',
+  },
+  {
+    icon: Network,
+    title: '深度代码与语义检索',
+    description: '结合 AST 语法树感知与混合向量/知识图谱检索，为大型代码库提供精准上下文。',
+    tag: 'RAG & Retrieval',
+  },
+  {
+    icon: ShieldCheck,
+    title: '严谨可重现基准评测',
+    description: '拒绝黑盒直觉，提供标准化的幻觉检测、多轮代码生成准确度与稳定性度量测试集。',
+    tag: 'Evaluation',
+  },
+  {
+    icon: Cpu,
+    title: '轻量高性能运行时',
+    description: '采用 Rust/TypeScript 核心实现，低开销、低延迟，轻松嵌入本地与云原生生产环境。',
+    tag: 'High Performance',
+  },
+  {
+    icon: Code2,
+    title: '开发者优先设计',
+    description: '标准协议规范，直观的 API 与 CLI 工具链，无缝融入现代 CI/CD 软件研发工作流。',
+    tag: 'Developer Experience',
+  },
+  {
+    icon: Layers,
+    title: '开放可插拔生态',
+    description: '模型中立设计，支持主流开源大模型与商业 API 混合路由，杜绝厂商锁定。',
+    tag: 'Open Ecosystem',
+  },
+];
+---
+
+<section class="py-20 bg-[#090d16]/50 relative border-t border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <h2 class="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-3">核心技术支柱</h2>
+      <p class="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+        为复杂真实场景而设计的 AI 工程体系
+      </p>
+      <p class="mt-4 text-slate-400 text-base leading-relaxed">
+        超越单纯的 Prompt 拼接，我们从底层架构重构智能体的思考、工具调用与协作规范。
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {features.map((feature) => {
+        const Icon = feature.icon;
+        return (
+          <div class="group p-6 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-cyan-500/30 hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-1">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 group-hover:scale-105 transition-all">
+                <Icon class="w-6 h-6" />
+              </div>
+              <span class="text-[11px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/5 text-slate-400 border border-white/5">
+                {feature.tag}
+              </span>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+              {feature.title}
+            </h3>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              {feature.description}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>
+

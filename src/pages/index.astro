@@ -1,0 +1,125 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import Features from '../components/Features.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import BlogCard from '../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+import { ArrowRight } from '@lucide/astro';
+import Github from '../components/icons/Github.astro';
+
+const allProjects = await getCollection('projects');
+const featuredProjects = allProjects
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+const allPosts = await getCollection('blog');
+const recentPosts = allPosts
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 2);
+---
+
+<Layout
+  title="Zetesis AI - 探索下一代智能体与自主系统"
+  description="Zetesis AI 专注于探索多智能体协调架构、代码智能检索与严谨基准评测。"
+>
+  <Hero />
+
+  <Features />
+
+  <!-- Featured Projects Section -->
+  <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+      <div>
+        <h2 class="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2">精选开源工作</h2>
+        <p class="text-3xl font-bold text-white tracking-tight">核心项目矩阵</p>
+      </div>
+      <a
+        href="/projects"
+        class="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-400 hover:text-cyan-300 transition-colors mt-4 md:mt-0"
+      >
+        <span>查看全部项目</span>
+        <ArrowRight class="w-4 h-4" />
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {featuredProjects.map((project) => (
+        <ProjectCard
+          title={project.data.title}
+          description={project.data.description}
+          category={project.data.category}
+          status={project.data.status}
+          githubUrl={project.data.githubUrl}
+          demoUrl={project.data.demoUrl}
+          slug={project.id}
+        />
+      ))}
+    </div>
+  </section>
+
+  <!-- Recent Updates / Blog Section -->
+  <section class="py-20 bg-[#090d16]/60 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+        <div>
+          <h2 class="text-xs uppercase tracking-widest text-indigo-400 font-semibold mb-2">研究与思考</h2>
+          <p class="text-3xl font-bold text-white tracking-tight">最新动态与研究论文</p>
+        </div>
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-400 hover:text-cyan-300 transition-colors mt-4 md:mt-0"
+        >
+          <span>浏览所有归档</span>
+          <ArrowRight class="w-4 h-4" />
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {recentPosts.map((post) => (
+          <BlogCard
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            author={post.data.author}
+            tags={post.data.tags}
+            slug={post.id}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative rounded-3xl p-8 sm:p-14 overflow-hidden border border-white/10 bg-gradient-to-br from-indigo-950/40 via-purple-950/20 to-cyan-950/30 text-center">
+      <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 blur-[100px] pointer-events-none"></div>
+
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">
+        参与 Zetesis AI 开放开源生态
+      </h2>
+      <p class="max-w-xl mx-auto text-slate-300 text-base sm:text-lg mb-8 leading-relaxed font-light">
+        无论是代码贡献、理论研讨、基准评测共建还是实际场景落地，我们期待与全球开发者共同拓展智能边界。
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <a
+          href="https://github.com/ZetesisAI"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-slate-900 font-semibold text-sm hover:bg-slate-200 transition-colors"
+        >
+          <Github class="w-4 h-4" />
+          <span>在 GitHub 上关注我们</span>
+        </a>
+        <a
+          href="/about"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-sm border border-white/10 transition-colors"
+        >
+          <span>了解更多愿景</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
