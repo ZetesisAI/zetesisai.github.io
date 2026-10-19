@@ -1,0 +1,303 @@
+---
+// Each research direction gets an animated SVG diagram. Drawing starts when the row scrolls into view.
+
+const hex = [-90, -30, 30, 90, 150, 210].map((a) => ({
+  x: 200 + 105 * Math.cos((a * Math.PI) / 180),
+  y: 150 + 105 * Math.sin((a * Math.PI) / 180),
+  lx: 200 + 132 * Math.cos((a * Math.PI) / 180),
+  ly: 153 + 128 * Math.sin((a * Math.PI) / 180),
+}));
+const agentLabels = ['plan', 'code', 'test', 'review', 'verify', 'recall'];
+
+const curve = (x1: number, y1: number, x2: number, y2: number) => {
+  const my = (y1 + y2) / 2;
+  return `M${x1} ${y1} C${x1} ${my}, ${x2} ${my}, ${x2} ${y2}`;
+};
+const treeEdges = [
+  [200, 40, 100, 120], [200, 40, 200, 120], [200, 40, 300, 120],
+  [100, 120, 60, 200], [100, 120, 130, 200], [200, 120, 175, 200], [200, 120, 225, 200],
+  [300, 120, 275, 200], [300, 120, 340, 200],
+  [60, 200, 40, 262], [60, 200, 80, 262], [225, 200, 205, 262], [225, 200, 250, 262], [340, 200, 340, 262],
+];
+const treeNodes = [
+  [200, 40, 'repo'], [100, 120, 'docs'], [200, 120, 'src'], [300, 120, 'tests'],
+  [60, 200, ''], [130, 200, ''], [175, 200, ''], [225, 200, 'agent'], [275, 200, ''], [340, 200, ''],
+  [40, 262, ''], [80, 262, ''], [205, 262, ''], [250, 262, 'plan()'], [340, 262, ''],
+] as const;
+const continueCurve = (x1: number, y1: number, x2: number, y2: number) => curve(x1, y1, x2, y2).replace(/^M\S+ \S+ /, '');
+const treeHighlight = [curve(200, 40, 200, 120), continueCurve(200, 120, 225, 200), continueCurve(225, 200, 250, 262)].join(' ');
+
+const evalPoints = [
+  { x: 80, y: 205, e: 14 },
+  { x: 140, y: 189, e: 12 },
+  { x: 200, y: 153, e: 13 },
+  { x: 260, y: 128, e: 10 },
+  { x: 320, y: 106, e: 9 },
+];
+
+const directions = [
+  {
+    id: 'coordinate',
+    kicker: 'Direction 01',
+    title: 'Agents that coordinate',
+    text: 'A team of language-model agents can solve problems a single model cannot, but the same team rarely behaves the same way twice. We design coordination protocols that make multi-agent behavior predictable enough to study and safe enough to deploy.',
+    points: [
+      'Agent collaboration modeled as an explicit state machine',
+      'Invariants that bound run-to-run divergence',
+      'Long-horizon software engineering as the test bed',
+    ],
+  },
+  {
+    id: 'map',
+    kicker: 'Direction 02',
+    title: 'Maps of knowledge',
+    text: 'Models reason better when they can see the shape of what they are working with. We turn large codebases and document collections into structured maps, so agents can navigate by structure instead of guessing from fragments.',
+    points: [
+      'Syntax-aware indexing of large repositories',
+      'Retrieval that follows dependencies, not just similarity',
+      'Context assembly measured against task success',
+    ],
+  },
+  {
+    id: 'evidence',
+    kicker: 'Direction 03',
+    title: 'Evidence over anecdote',
+    text: 'A single benchmark score says little without its uncertainty. We build evaluation protocols that report variance, compare systems fairly, and separate real progress from noise.',
+    points: [
+      'Confidence intervals for every reported number',
+      'Paired comparisons on shared task sets',
+      'Open harnesses that anyone can rerun',
+    ],
+  },
+];
+---
+
+<section id="approach" class="scroll-mt-28 py-24 md:py-32 border-t border-white/[0.06]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-16 md:mb-24">
+      <div class="lg:col-span-3">
+        <p class="section-label">02 — Approach</p>
+      </div>
+      <h2 data-reveal class="lg:col-span-9 text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+        Three questions we keep asking.
+      </h2>
+    </div>
+
+    <div class="space-y-24 md:space-y-32">
+      {directions.map((d, i) => (
+        <article data-reveal class="approach-row grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div class={`celestial-card approach-visual relative rounded-3xl overflow-hidden aspect-[4/3] ${i % 2 === 1 ? 'lg:order-2' : ''}`}>
+            <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-48 bg-cyan-500/10 blur-[80px] pointer-events-none"></div>
+
+            {d.id === 'coordinate' && (
+              <svg viewBox="0 0 400 300" class="absolute inset-0 w-full h-full" aria-hidden="true">
+                {hex.map((p, k) => {
+                  const n = hex[(k + 1) % hex.length];
+                  return <line class="draw" x1={p.x} y1={p.y} x2={n.x} y2={n.y} pathLength="100" stroke="rgba(165,180,252,0.25)" stroke-width="1" />;
+                })}
+                {hex.map((p) => (
+                  <line class="draw" x1="200" y1="150" x2={p.x} y2={p.y} pathLength="100" stroke="rgba(103,232,249,0.2)" stroke-width="1" />
+                ))}
+                {hex.map((p, k) => (
+                  <line class="pulse" x1="200" y1="150" x2={p.x} y2={p.y} pathLength="100" stroke="#67e8f9" stroke-width="2" stroke-linecap="round" style={`animation-delay: ${k * 0.45}s;`} />
+                ))}
+                {hex.map((p, k) => {
+                  const n = hex[(k + 1) % hex.length];
+                  return <line class="pulse" x1={p.x} y1={p.y} x2={n.x} y2={n.y} pathLength="100" stroke="#a5b4fc" stroke-width="1.6" stroke-linecap="round" style={`animation-delay: ${1.4 + k * 0.6}s; animation-duration: 3.6s;`} />;
+                })}
+                {hex.map((p, k) => (
+                  <g>
+                    <circle cx={p.x} cy={p.y} r="12" fill="rgba(99,102,241,0.15)" class="node-pulse" style={`animation-delay: ${k * 0.45 + 0.6}s;`} />
+                    <circle cx={p.x} cy={p.y} r="5" fill="#0b1224" stroke="#a5b4fc" stroke-width="1.5" />
+                    <text x={p.lx} y={p.ly} text-anchor="middle" class="font-mono" font-size="10" fill="rgba(148,163,184,0.8)">{agentLabels[k]}</text>
+                  </g>
+                ))}
+                <circle cx="200" cy="150" r="22" fill="rgba(34,211,238,0.12)" class="node-pulse" />
+                <circle cx="200" cy="150" r="9" fill="#0b1224" stroke="#67e8f9" stroke-width="2" />
+                <circle cx="200" cy="150" r="3" fill="#67e8f9" />
+              </svg>
+            )}
+
+            {d.id === 'map' && (
+              <svg viewBox="0 0 400 300" class="absolute inset-0 w-full h-full" aria-hidden="true">
+                {treeEdges.map(([x1, y1, x2, y2]) => (
+                  <path class="draw" d={curve(x1, y1, x2, y2)} pathLength="100" fill="none" stroke="rgba(148,163,184,0.3)" stroke-width="1" />
+                ))}
+                <path class="draw draw-late" d={treeHighlight} pathLength="100" fill="none" stroke="rgba(103,232,249,0.7)" stroke-width="2" />
+                <path class="pulse pulse-long" d={treeHighlight} pathLength="100" fill="none" stroke="#ecfeff" stroke-width="3" stroke-linecap="round" />
+                {treeNodes.map(([x, y, label]) => {
+                  const lit = label === 'repo' || label === 'src' || label === 'agent' || label === 'plan()';
+                  return (
+                    <g>
+                      {lit && <circle cx={x} cy={y} r="10" fill="rgba(34,211,238,0.15)" class="node-pulse" />}
+                      <rect x={x - 4.5} y={y - 4.5} width="9" height="9" rx="2" fill="#0b1224" stroke={lit ? '#67e8f9' : 'rgba(165,180,252,0.6)'} stroke-width="1.4" />
+                      {label && <text x={x + 10} y={y + 3.5} class="font-mono" font-size="10" fill={lit ? 'rgba(165,243,252,0.9)' : 'rgba(148,163,184,0.7)'}>{label}</text>}
+                    </g>
+                  );
+                })}
+              </svg>
+            )}
+
+            {d.id === 'evidence' && (
+              <svg viewBox="0 0 400 300" class="absolute inset-0 w-full h-full" aria-hidden="true">
+                {[90, 140, 190].map((y) => (
+                  <line x1="50" y1={y} x2="370" y2={y} stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+                ))}
+                <line x1="50" y1="250" x2="370" y2="250" stroke="rgba(148,163,184,0.35)" stroke-width="1" />
+                <line x1="50" y1="40" x2="50" y2="250" stroke="rgba(148,163,184,0.35)" stroke-width="1" />
+                <line x1="50" y1="180" x2="370" y2="180" stroke="rgba(245,158,11,0.45)" stroke-width="1" stroke-dasharray="4 5" />
+                <text x="364" y="174" text-anchor="end" class="font-mono" font-size="9.5" fill="rgba(253,230,138,0.75)">baseline</text>
+
+                <path class="band" d="M50 208 C90 198, 130 176, 170 152 C210 130, 250 108, 290 96 C320 86, 345 74, 370 68 L370 124 C340 130, 310 136, 290 140 C250 150, 210 172, 170 188 C130 204, 90 224, 50 232 Z" fill="url(#evidence-band)" />
+                <path class="draw draw-late" d="M50 220 C90 211, 130 190, 170 170 C210 151, 250 129, 290 118 C320 110, 345 100, 370 96" pathLength="100" fill="none" stroke="#67e8f9" stroke-width="2" />
+
+                {evalPoints.map((p, k) => (
+                  <g class="point" style={`animation-delay: ${1 + k * 0.15}s;`}>
+                    <line x1={p.x} y1={p.y - p.e} x2={p.x} y2={p.y + p.e} stroke="rgba(165,180,252,0.8)" stroke-width="1.2" />
+                    <line x1={p.x - 4} y1={p.y - p.e} x2={p.x + 4} y2={p.y - p.e} stroke="rgba(165,180,252,0.8)" stroke-width="1.2" />
+                    <line x1={p.x - 4} y1={p.y + p.e} x2={p.x + 4} y2={p.y + p.e} stroke="rgba(165,180,252,0.8)" stroke-width="1.2" />
+                    <circle cx={p.x} cy={p.y} r="3.5" fill="#0b1224" stroke="#c7d2fe" stroke-width="1.5" />
+                  </g>
+                ))}
+
+                <line class="scan" x1="50" y1="40" x2="50" y2="250" stroke="rgba(103,232,249,0.5)" stroke-width="1" />
+
+                <text x="58" y="56" class="font-mono" font-size="10" fill="rgba(148,163,184,0.8)">n = 512 tasks · 95% CI</text>
+                <defs>
+                  <linearGradient id="evidence-band" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(34,211,238,0.22)" />
+                    <stop offset="100%" stop-color="rgba(99,102,241,0.06)" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            )}
+          </div>
+
+          <div class={i % 2 === 1 ? 'lg:order-1' : ''}>
+            <p class="font-mono text-xs uppercase tracking-widest text-indigo-300 mb-4">{d.kicker}</p>
+            <h3 class="text-2xl sm:text-4xl font-bold tracking-tight text-white mb-5">{d.title}</h3>
+            <p class="text-slate-400 font-light leading-relaxed mb-8">{d.text}</p>
+            <ul class="space-y-3 border-t border-white/[0.08] pt-6">
+              {d.points.map((point) => (
+                <li class="flex items-start gap-3 text-sm text-slate-300">
+                  <span class="mt-2 w-1.5 h-1.5 shrink-0 rounded-full bg-cyan-300 shadow-[0_0_8px_#67e8f9]"></span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Lines draw themselves in once the row is visible. Without JS they are simply shown. */
+  :global(.js) .approach-row .draw {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  :global(.js) .approach-row.is-visible .draw {
+    animation: draw 1.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+  :global(.js) .approach-row.is-visible .draw-late {
+    animation-delay: 0.6s;
+  }
+
+  .pulse {
+    stroke-dasharray: 10 200;
+    stroke-dashoffset: 10;
+    animation: travel 2.7s ease-in-out infinite;
+  }
+  .pulse-long {
+    stroke-dasharray: 8 200;
+    animation-duration: 3.2s;
+    animation-delay: 2.2s;
+  }
+
+  .node-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: node-pulse 2.7s ease-in-out infinite;
+  }
+
+  .band {
+    opacity: 0;
+    transition: opacity 1.2s ease 0.4s;
+  }
+  .approach-row.is-visible .band,
+  :global(html:not(.js)) .band {
+    opacity: 1;
+  }
+
+  :global(.js) .point {
+    opacity: 0;
+  }
+  :global(.js) .approach-row.is-visible .point {
+    animation: fade-in 0.6s ease forwards;
+  }
+
+  .scan {
+    animation: scan 6s ease-in-out infinite;
+  }
+
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes travel {
+    from {
+      stroke-dashoffset: 10;
+    }
+    to {
+      stroke-dashoffset: -100;
+    }
+  }
+  @keyframes node-pulse {
+    0%, 100% {
+      transform: scale(0.8);
+      opacity: 0.4;
+    }
+    50% {
+      transform: scale(1.25);
+      opacity: 1;
+    }
+  }
+  @keyframes fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes scan {
+    0%, 100% {
+      transform: translateX(0);
+      opacity: 0;
+    }
+    10%, 90% {
+      opacity: 1;
+    }
+    50% {
+      transform: translateX(320px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulse,
+    .scan {
+      display: none;
+    }
+    .node-pulse {
+      animation: none;
+    }
+    :global(.js) .approach-row .draw {
+      stroke-dashoffset: 0;
+      animation: none !important;
+    }
+    :global(.js) .point {
+      opacity: 1;
+      animation: none !important;
+    }
+  }
+</style>

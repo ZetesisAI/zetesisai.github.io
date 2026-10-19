@@ -1,0 +1,226 @@
+---
+import { ArrowDown } from '@lucide/astro';
+---
+
+<section class="relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16 md:pt-10 md:pb-24 flex flex-col items-center text-center">
+    <!-- Orbit system: the original emblem animation, with two tilted 3D orbits drawn around it on canvas -->
+    <div id="orbit-stage" class="relative w-[min(88vw,60svh,540px)] aspect-square select-none" aria-hidden="true">
+      <!-- Soft ambient glow behind everything -->
+      <div class="orbit-layer absolute inset-[18%] rounded-full bg-gradient-to-tr from-cyan-500/10 via-indigo-600/15 to-purple-600/10 blur-3xl animate-celestial-pulse" data-depth="4"></div>
+
+      <!-- Orbits behind the core -->
+      <canvas id="orbit-back" class="orbit-layer absolute inset-0 w-full h-full" data-depth="8"></canvas>
+
+      <!-- Core: the original emblem animation -->
+      <div class="orbit-layer absolute inset-[22%] flex items-center justify-center" data-depth="12">
+        <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-500/15 via-indigo-600/20 to-purple-600/15 blur-2xl animate-celestial-pulse"></div>
+
+        <div class="absolute inset-[2.5%] rounded-full border border-cyan-500/20 animate-celestial-orbit">
+          <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-cyan-300 shadow-[0_0_10px_#67e8f9]"></div>
+        </div>
+        <div class="absolute inset-[10%] rounded-full border border-indigo-500/15 animate-celestial-orbit-reverse">
+          <div class="absolute bottom-4 right-6 w-1.5 h-1.5 rounded-full bg-indigo-300 shadow-[0_0_8px_#a5b4fc]"></div>
+        </div>
+
+        <div class="absolute inset-[12.5%] rounded-full bg-[#050814]/85 backdrop-blur-md border border-white/10 shadow-[inset_0_0_25px_rgba(56,189,248,0.2)]"></div>
+
+        <img
+          src="/logo-trimmed.png"
+          alt=""
+          class="relative z-10 w-[55%] h-[55%] object-contain drop-shadow-[0_0_30px_rgba(56,189,248,0.5)] transition-transform duration-500 hover:scale-105"
+          loading="eager"
+        />
+      </div>
+
+      <!-- Orbits in front of the core -->
+      <canvas id="orbit-front" class="orbit-layer absolute inset-0 w-full h-full pointer-events-none" data-depth="8"></canvas>
+    </div>
+
+    <!-- Headline -->
+    <div class="relative -mt-2 sm:-mt-6 max-w-4xl">
+      <p class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono tracking-widest uppercase bg-white/[0.04] border border-cyan-500/25 text-cyan-300 mb-6 backdrop-blur-md">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_#67e8f9]"></span>
+        Open research collective
+      </p>
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.05] mb-6">
+        Teaching machines <br class="hidden sm:inline" />
+        <span class="text-celestial">the art of inquiry.</span>
+      </h1>
+      <p class="max-w-2xl mx-auto text-base sm:text-lg text-slate-300 font-light leading-relaxed">
+        Zetesis AI builds AI systems that ask questions, test hypotheses, and learn from evidence, and publishes everything along the way.
+      </p>
+    </div>
+
+    <a href="#about" class="mt-12 inline-flex flex-col items-center gap-2 text-[11px] font-mono tracking-widest uppercase text-slate-500 hover:text-cyan-300 transition-colors">
+      <span>Scroll</span>
+      <ArrowDown class="w-4 h-4 animate-bounce" />
+    </a>
+  </div>
+</section>
+
+<style>
+  .orbit-layer {
+    transition: translate 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: translate;
+  }
+</style>
+
+<script>
+  type Orbit = {
+    radius: number; // fraction of stage size
+    tilt: number; // rotation about the x axis, radians
+    yaw: number; // rotation in screen plane, radians
+    speed: number; // radians per second
+    color: string;
+    planet: { size: number; color: string };
+  };
+
+  const deg = Math.PI / 180;
+  const orbits: Orbit[] = [
+    { radius: 0.4, tilt: 74 * deg, yaw: -18 * deg, speed: 0.28, color: '103,232,249', planet: { size: 3.2, color: '#a5f3fc' } },
+    { radius: 0.47, tilt: 68 * deg, yaw: 14 * deg, speed: -0.18, color: '165,180,252', planet: { size: 2.6, color: '#c7d2fe' } },
+  ];
+
+  function initOrbits() {
+    const stage = document.getElementById('orbit-stage');
+    const back = document.getElementById('orbit-back') as HTMLCanvasElement | null;
+    const front = document.getElementById('orbit-front') as HTMLCanvasElement | null;
+    if (!stage || !back || !front) return;
+    const bctx = back.getContext('2d');
+    const fctx = front.getContext('2d');
+    if (!bctx || !fctx) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let size = 0;
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      size = stage!.clientWidth;
+      const setup = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+        canvas.width = size * dpr;
+        canvas.height = size * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+      setup(back!, bctx!);
+      setup(front!, fctx!);
+    }
+
+    // Project a point on a tilted orbit to screen space. z > 0 is in front of the emblem.
+    function project(o: Orbit, theta: number) {
+      const r = o.radius * size;
+      const px = Math.cos(theta) * r;
+      const py = Math.sin(theta) * r;
+      const y = py * Math.cos(o.tilt);
+      const z = py * Math.sin(o.tilt);
+      const c = size / 2;
+      return {
+        x: c + px * Math.cos(o.yaw) - y * Math.sin(o.yaw),
+        y: c + px * Math.sin(o.yaw) + y * Math.cos(o.yaw),
+        z: z / r,
+      };
+    }
+
+    function draw(t: number) {
+      bctx!.clearRect(0, 0, size, size);
+      fctx!.clearRect(0, 0, size, size);
+
+      for (const o of orbits) {
+        // Orbit path, slightly brighter on the near side.
+        const steps = 120;
+        let prev = project(o, 0);
+        for (let s = 1; s <= steps; s++) {
+          const p = project(o, (s / steps) * Math.PI * 2);
+          const z = (p.z + prev.z) / 2;
+          const ctx = z > 0 ? fctx! : bctx!;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(p.x, p.y);
+          ctx.strokeStyle = `rgba(${o.color},${0.08 + 0.16 * (z + 1) / 2})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          prev = p;
+        }
+
+        // Planet with a short trail
+        const theta = o.speed * t;
+        const dir = Math.sign(o.speed);
+        for (let k = 8; k >= 1; k--) {
+          const p = project(o, theta - dir * k * 0.03);
+          const ctx = p.z > 0 ? fctx! : bctx!;
+          ctx.globalAlpha = (1 - k / 9) * 0.3;
+          ctx.fillStyle = o.planet.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, o.planet.size * (1 - k / 11), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        const p = project(o, theta);
+        const ctx = p.z > 0 ? fctx! : bctx!;
+        const r = o.planet.size * (1 + 0.25 * p.z);
+        const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 4);
+        glow.addColorStop(0, o.planet.color);
+        glow.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r * 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 0.85 + 0.15 * p.z;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    let frame = 0;
+    let running = false;
+    const start = performance.now();
+    function loop(now: number) {
+      draw((now - start) / 1000);
+      frame = requestAnimationFrame(loop);
+    }
+    function play() {
+      if (running || reduceMotion) return;
+      running = true;
+      frame = requestAnimationFrame(loop);
+    }
+    function pause() {
+      running = false;
+      cancelAnimationFrame(frame);
+    }
+
+    resize();
+    draw(0);
+    new ResizeObserver(() => {
+      resize();
+      draw((performance.now() - start) / 1000);
+    }).observe(stage);
+
+    // Only animate while the hero is on screen and the tab is visible.
+    let onScreen = true;
+    new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      onScreen && !document.hidden ? play() : pause();
+    }).observe(stage);
+    document.addEventListener('visibilitychange', () => {
+      onScreen && !document.hidden ? play() : pause();
+    });
+
+    // Subtle mouse parallax: each layer drifts by its data-depth.
+    if (!reduceMotion && window.matchMedia('(pointer: fine)').matches) {
+      const layers = stage.querySelectorAll<HTMLElement>('.orbit-layer');
+      window.addEventListener('pointermove', (e) => {
+        const x = e.clientX / window.innerWidth - 0.5;
+        const y = e.clientY / window.innerHeight - 0.5;
+        layers.forEach((layer) => {
+          const depth = Number(layer.dataset.depth || 0);
+          layer.style.translate = `${x * depth * 1.5}px ${y * depth * 1.5}px`;
+        });
+      });
+    }
+  }
+
+  initOrbits();
+</script>

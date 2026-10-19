@@ -1,4 +1,5 @@
 ---
+import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Starfield from '../components/Starfield.astro';
@@ -11,8 +12,8 @@ interface Props {
 }
 
 const {
-  title = 'Zetesis AI — Autonomous Intelligence & Multi-Agent Systems',
-  description = 'Zetesis AI is an open research and engineering collective pioneering deterministic multi-agent coordination, code cartography, and empirical AI evaluation.',
+  title = 'Zetesis AI — Open Research on Autonomous Intelligence',
+  description = 'Zetesis AI is an open research collective studying AI systems that coordinate, reason over structured knowledge, and are evaluated with rigor.',
   image = '/logo-512.png',
 } = Astro.props;
 
@@ -35,7 +36,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <title>{title}</title>
     <meta name="title" content={title} />
     <meta name="description" content={description} />
-    <meta name="keywords" content="Zetesis AI, AI Agents, Multi-Agent Systems, Autonomous Coding, AST RAG, LLM Benchmark, Open Source AI" />
+    <meta name="keywords" content="Zetesis AI, AI Research, Multi-Agent Systems, AI Evaluation, Open Source AI" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -53,11 +54,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <!-- Sitemap Link -->
     <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <slot name="head" />
   </head>
-  <body class="bg-[#02040a] text-slate-100 flex flex-col min-h-screen antialiased selection:bg-cyan-500/25 selection:text-white relative">
+  <body class="text-slate-100 flex flex-col min-h-screen antialiased selection:bg-cyan-500/25 selection:text-white relative">
     <!-- Starfield canvas background -->
     <Starfield />
 
+    <AnnouncementBar />
     <Header />
 
     <main class="flex-1 relative z-10">
@@ -65,5 +70,21 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </main>
 
     <Footer />
+
+    <script>
+      // Fade sections in as they enter the viewport.
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          }
+        },
+        { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+      );
+      document.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el));
+    </script>
   </body>
 </html>

@@ -1,0 +1,75 @@
+---
+import { Mail } from '@lucide/astro';
+import Github from '../icons/Github.astro';
+import { site, team } from '../../data/site';
+---
+
+<section id="team" class="scroll-mt-28 py-24 md:py-32 border-t border-white/[0.06]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+    <div class="lg:col-span-3">
+      <p class="section-label">04 — Team</p>
+    </div>
+
+    <div class="lg:col-span-9">
+      <h2 data-reveal class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight mb-8">
+        The people behind the inquiry.
+      </h2>
+      <p data-reveal class="max-w-3xl text-slate-400 font-light leading-relaxed" style="--reveal-delay: 100ms;">
+        We are researchers and engineers with backgrounds in machine learning, programming languages, and distributed systems. We work in the open and welcome collaborators who care about careful, reproducible science.
+      </p>
+
+      <ul class="mt-14 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {team.map((member, i) => (
+          <li data-reveal class="celestial-card rounded-2xl p-6" style={`--reveal-delay: ${i * 80}ms;`}>
+            <div class="relative w-14 h-14 mb-6">
+              <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-400 via-indigo-500 to-purple-500 animate-celestial-orbit opacity-80"></div>
+              <div class="absolute inset-[2px] rounded-full bg-[#050814] flex items-center justify-center font-mono text-sm text-cyan-200">
+                {member.initials}
+              </div>
+            </div>
+            <p class="text-white font-semibold">{member.name}</p>
+            <p class="mt-1 text-xs font-mono text-slate-400">{member.focus}</p>
+          </li>
+        ))}
+      </ul>
+
+      <!-- Contact -->
+      <div data-reveal class="mt-20 relative overflow-hidden rounded-3xl p-8 sm:p-12 border border-white/[0.08] bg-gradient-to-br from-indigo-950/40 via-[#030611]/80 to-cyan-950/30 backdrop-blur-2xl">
+        <div class="absolute -top-32 right-0 w-[420px] h-[260px] bg-cyan-500/15 blur-[120px] pointer-events-none"></div>
+        <div class="relative grid grid-cols-1 md:grid-cols-5 gap-8 items-end">
+          <div class="md:col-span-3">
+            <p class="section-label mb-4">Contact</p>
+            <h3 class="text-2xl sm:text-4xl font-bold tracking-tight text-white mb-4">Build with us.</h3>
+            <p class="text-slate-400 font-light leading-relaxed">
+              Interested in a collaboration, a research visit, or one of our open problems? Reach out. We read everything.
+            </p>
+          </div>
+          <div class="md:col-span-2 flex flex-wrap md:justify-end gap-3">
+            {site.email && (
+              <a
+                href={`mailto:${site.email}`}
+                class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-slate-950 font-semibold text-sm hover:bg-slate-200 transition-all hover:scale-[1.02] shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+              >
+                <Mail class="w-4 h-4" />
+                <span>{site.email}</span>
+              </a>
+            )}
+            <a
+              href={site.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={`inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all hover:scale-[1.02] ${
+                site.email
+                  ? 'bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/10 hover:border-cyan-400/30'
+                  : 'bg-white text-slate-950 hover:bg-slate-200 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+              }`}
+            >
+              <Github class="w-4 h-4" />
+              <span>GitHub</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

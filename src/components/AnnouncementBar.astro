@@ -1,0 +1,19 @@
+---
+import { ArrowRight } from '@lucide/astro';
+import { getPapers } from '../data/papers';
+
+const [latest] = await getPapers();
+---
+
+{latest && (
+  <a
+    href={`/research/${latest.id}`}
+    class="group relative z-50 block border-b border-white/[0.06] bg-gradient-to-r from-cyan-950/40 via-[#050814] to-indigo-950/40 text-center"
+  >
+    <div class="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-center gap-2 text-xs">
+      <span class="font-mono font-semibold text-cyan-300">New:</span>
+      <span class="truncate text-slate-300 group-hover:text-white transition-colors">{latest.data.title}</span>
+      <ArrowRight class="w-3.5 h-3.5 shrink-0 text-slate-500 group-hover:text-cyan-300 group-hover:translate-x-0.5 transition-all" />
+    </div>
+  </a>
+)}

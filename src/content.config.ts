@@ -1,31 +1,23 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-const projects = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
+const papers = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/papers' }),
   schema: z.object({
     title: z.string(),
-    description: z.string(),
-    category: z.string(),
-    status: z.enum(['Active', 'Beta', 'Research', 'Archived']).default('Active'),
-    githubUrl: z.string().url().optional(),
-    demoUrl: z.string().url().optional(),
-    order: z.number().default(0),
-    featured: z.boolean().default(false),
-  }),
-});
-
-const blog = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
+    abstract: z.string(),
     pubDate: z.coerce.date(),
-    author: z.string().default('Zetesis AI Team'),
+    authors: z.array(z.string()).default(['Zetesis AI Research']),
     tags: z.array(z.string()).default([]),
+    links: z
+      .object({
+        pdf: z.string().optional(),
+        arxiv: z.string().url().optional(),
+        code: z.string().url().optional(),
+      })
+      .default({}),
     draft: z.boolean().default(false),
   }),
 });
 
-export const collections = { projects, blog };
-
+export const collections = { papers };

@@ -1,0 +1,49 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import { getPapers, formatDate } from '../../data/papers';
+
+const papers = (await getPapers()).slice(0, 6);
+---
+
+<section id="research" class="scroll-mt-28 py-24 md:py-32 border-t border-white/[0.06]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-14">
+      <div class="lg:col-span-3">
+        <p class="section-label">03 — Research</p>
+      </div>
+      <h2 data-reveal class="lg:col-span-9 text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+        Recent research
+      </h2>
+    </div>
+
+    <div class="lg:grid lg:grid-cols-12 lg:gap-12">
+      <ol class="lg:col-start-4 lg:col-span-9 border-b border-white/[0.08]">
+        {papers.map((paper, i) => (
+          <li data-reveal style={`--reveal-delay: ${i * 80}ms;`}>
+            <a
+              href={`/research/${paper.id}`}
+              class="group relative grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-8 py-8 md:py-10 border-t border-white/[0.08] hover:border-cyan-400/30 transition-colors"
+            >
+              <div class="md:col-span-3 flex md:flex-col gap-3 md:gap-2 font-mono text-xs text-slate-500">
+                <time datetime={paper.data.pubDate.toISOString()} class="text-slate-400">{formatDate(paper.data.pubDate)}</time>
+                {paper.data.tags[0] && <span class="text-indigo-300/80">{paper.data.tags[0]}</span>}
+              </div>
+              <div class="md:col-span-8">
+                <h3 class="text-xl sm:text-2xl font-semibold tracking-tight text-white group-hover:text-cyan-200 transition-colors leading-snug mb-3">
+                  {paper.data.title}
+                </h3>
+                <p class="text-sm text-slate-400 font-light leading-relaxed line-clamp-2">{paper.data.abstract}</p>
+                <p class="mt-3 text-xs font-mono text-slate-500">{paper.data.authors.join(', ')}</p>
+              </div>
+              <div class="hidden md:flex md:col-span-1 justify-end">
+                <span class="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-slate-400 group-hover:text-slate-950 group-hover:bg-cyan-300 group-hover:border-cyan-300 group-hover:shadow-[0_0_20px_rgba(103,232,249,0.5)] transition-all">
+                  <ArrowUpRight class="w-4 h-4" />
+                </span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>

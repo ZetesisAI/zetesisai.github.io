@@ -1,0 +1,189 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { render } from 'astro:content';
+import { ArrowLeft, FileText, Code } from '@lucide/astro';
+import { getPapers, formatDate } from '../../data/papers';
+import 'katex/dist/katex.min.css';
+
+export async function getStaticPaths() {
+  const papers = await getPapers();
+  return papers.map((paper) => ({ params: { slug: paper.id }, props: { paper } }));
+}
+
+const { paper } = Astro.props;
+const { Content, headings } = await render(paper);
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const { title, abstract, pubDate, authors, tags, links } = paper.data;
+
+const linkItems = [
+  links.pdf && { label: 'PDF', href: links.pdf, icon: FileText },
+  links.arxiv && { label: 'arXiv', href: links.arxiv, icon: FileText },
+  links.code && { label: 'Code', href: links.code, icon: Code },
+].filter(Boolean) as { label: string; href: string; icon: typeof FileText }[];
+---
+
+<Layout title={`${title} — Zetesis AI`} description={abstract}>
+  <article class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+    <a
+      href="/#research"
+      class="inline-flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-cyan-300 transition-colors mb-8 group"
+    >
+      <ArrowLeft class="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+      <span>All research</span>
+    </a>
+
+    <!-- Solid panel so the starfield never sits behind the text -->
+    <div class="rounded-3xl bg-[#05070f] border border-white/[0.06] px-5 py-10 sm:px-10 sm:py-14 lg:px-16 lg:py-20">
+
+    <!-- Paper header -->
+    <header class="max-w-4xl mb-14">
+      <div class="flex flex-wrap items-center gap-3 font-mono text-xs text-slate-400 mb-6">
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate, 'long')}</time>
+        {tags.map((tag) => (
+          <span class="px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-indigo-200">{tag}</span>
+        ))}
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.12] mb-6">{title}</h1>
+      <p class="text-sm sm:text-base text-slate-300">{authors.join(', ')}</p>
+
+      {linkItems.length > 0 && (
+        <div class="flex flex-wrap gap-3 mt-8">
+          {linkItems.map(({ label, href, icon: Icon }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/10 hover:border-cyan-400/30 transition-all"
+            >
+              <Icon class="w-3.5 h-3.5" />
+              <span>{label}</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-12">
+      <div class="xl:col-span-9 max-w-4xl">
+        <section class="celestial-card !transform-none rounded-2xl p-6 sm:p-8 mb-14">
+          <h2 class="section-label mb-4">Abstract</h2>
+          <p class="text-slate-200 leading-relaxed font-light">{abstract}</p>
+        </section>
+
+        <div class="paper">
+          <Content />
+        </div>
+      </div>
+
+      {toc.length > 0 && (
+        <aside class="hidden xl:block xl:col-span-3">
+          <nav class="sticky top-28 border-l border-white/[0.08] pl-5">
+            <p class="section-label mb-4">Contents</p>
+            <ul class="space-y-2 text-sm">
+              {toc.map((h) => (
+                <li class={h.depth === 3 ? 'pl-4' : ''}>
+                  <a href={`#${h.slug}`} class="text-slate-400 hover:text-cyan-300 transition-colors">{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </aside>
+      )}
+    </div>
+    </div>
+  </article>
+</Layout>
+
+<style is:global>
+  /* Paper typography. Works for Markdown and for raw HTML (e.g. LaTeX converted with LaTeXML or pandoc). */
+  .paper {
+    color: #cbd5e1;
+    font-size: 1.0625rem;
+    line-height: 1.85;
+    font-weight: 300;
+  }
+  .paper h1,
+  .paper h2,
+  .paper h3,
+  .paper h4 {
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    scroll-margin-top: 7rem;
+  }
+  .paper h1 { font-size: 1.875rem; margin: 3rem 0 1rem; }
+  .paper h2 {
+    font-size: 1.5rem;
+    margin: 3.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .paper h3 { font-size: 1.2rem; margin: 2.25rem 0 0.75rem; color: #e2e8f0; }
+  .paper h4 { font-size: 1.05rem; margin: 1.75rem 0 0.5rem; color: #e2e8f0; }
+  .paper > :first-child { margin-top: 0; }
+  .paper p { margin-bottom: 1.25rem; }
+  .paper strong { color: #ffffff; font-weight: 600; }
+  .paper em { color: #e2e8f0; }
+  .paper a { color: #67e8f9; text-decoration: underline; text-underline-offset: 4px; }
+  .paper a:hover { color: #a5f3fc; }
+  .paper ul,
+  .paper ol { margin: 0 0 1.25rem 1.5rem; }
+  .paper ul { list-style: disc; }
+  .paper ol { list-style: decimal; }
+  .paper li { margin-bottom: 0.4rem; }
+  .paper li::marker { color: #67e8f9; }
+  .paper blockquote {
+    border-left: 2px solid #67e8f9;
+    padding-left: 1rem;
+    color: #94a3b8;
+    margin: 1.75rem 0;
+  }
+  .paper code {
+    background: rgba(255, 255, 255, 0.07);
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.375rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.85em;
+    color: #7dd3fc;
+  }
+  .paper pre {
+    background: #02040a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.875rem;
+    padding: 1.25rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+  .paper pre code { background: transparent; padding: 0; color: #f8fafc; }
+  .paper table {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.9375rem;
+  }
+  .paper th,
+  .paper td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: left;
+  }
+  .paper th {
+    color: #ffffff;
+    font-weight: 600;
+    border-bottom-color: rgba(103, 232, 249, 0.35);
+  }
+  .paper img,
+  .paper figure { margin: 2rem auto; max-width: 100%; }
+  .paper figcaption { font-size: 0.875rem; color: #94a3b8; text-align: center; margin-top: 0.75rem; }
+
+  /* KaTeX */
+  .paper .katex { color: #f1f5f9; font-size: 1.08em; }
+  .paper .katex-display {
+    margin: 1.75rem 0;
+    padding: 0.75rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+</style>
