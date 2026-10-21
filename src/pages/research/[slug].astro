@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { render } from 'astro:content';
-import { ArrowLeft, FileText, Code } from '@lucide/astro';
+import { ArrowUpRight, FileText, Code } from '@lucide/astro';
 import { getPapers, formatDate } from '../../data/papers';
 import 'katex/dist/katex.min.css';
 
@@ -16,92 +16,153 @@ const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 const { title, abstract, pubDate, authors, tags, links } = paper.data;
 
 const linkItems = [
-  links.pdf && { label: 'PDF', href: links.pdf, icon: FileText },
+  links.pdf && { label: 'Read the paper', href: links.pdf, icon: FileText },
   links.arxiv && { label: 'arXiv', href: links.arxiv, icon: FileText },
   links.code && { label: 'Code', href: links.code, icon: Code },
 ].filter(Boolean) as { label: string; href: string; icon: typeof FileText }[];
+
+// Up to two other papers for the "More research" footer
+const more = (await getPapers()).filter((p) => p.id !== paper.id).slice(0, 2);
 ---
 
 <Layout title={`${title} — Zetesis AI`} description={abstract}>
-  <article class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-    <a
-      href="/#research"
-      class="inline-flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-cyan-300 transition-colors mb-8 group"
-    >
-      <ArrowLeft class="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-      <span>All research</span>
-    </a>
-
-    <!-- Solid panel so the starfield never sits behind the text -->
-    <div class="rounded-3xl bg-[#05070f] border border-white/[0.06] px-5 py-10 sm:px-10 sm:py-14 lg:px-16 lg:py-20">
-
-    <!-- Paper header -->
-    <header class="max-w-4xl mb-14">
-      <div class="flex flex-wrap items-center gap-3 font-mono text-xs text-slate-400 mb-6">
+  <!-- Title banner: full-width, dark gradient, large title bottom-left -->
+  <section class="relative overflow-hidden bg-[radial-gradient(at_50%_120%,#0c1c29,#030a0f_70%)] border-b border-white/[0.06]">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-cyan-500/10 blur-[140px] pointer-events-none"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[300px] md:min-h-[400px] flex flex-col justify-end pt-20 pb-12 md:pb-16">
+      <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono text-slate-400 mb-6">
+        <span class="text-cyan-300">{tags[0] ?? 'Research'}</span>
+        <span class="text-slate-600">·</span>
         <time datetime={pubDate.toISOString()}>{formatDate(pubDate, 'long')}</time>
-        {tags.map((tag) => (
-          <span class="px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-indigo-200">{tag}</span>
-        ))}
-      </div>
+      </p>
+      <h1 class="max-w-5xl text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.08]">{title}</h1>
+    </div>
+  </section>
 
-      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.12] mb-6">{title}</h1>
-      <p class="text-sm sm:text-base text-slate-300">{authors.join(', ')}</p>
-
-      {linkItems.length > 0 && (
-        <div class="flex flex-wrap gap-3 mt-8">
-          {linkItems.map(({ label, href, icon: Icon }) => (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/10 hover:border-cyan-400/30 transition-all"
-            >
-              <Icon class="w-3.5 h-3.5" />
-              <span>{label}</span>
-            </a>
-          ))}
-        </div>
+  <!-- Article on a solid band so the starfield never sits behind text -->
+  <div class="bg-[#070b16]/95 border-b border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:grid lg:grid-cols-12 lg:gap-6">
+      <!-- Sticky table of contents (left 2 columns on desktop) -->
+      {toc.length > 0 && (
+        <nav id="paper-toc" aria-label="Table of contents" class="hidden lg:block lg:col-span-2 lg:sticky lg:top-28 self-start">
+          <ul class="flex flex-col gap-4 text-xs leading-tight">
+            {toc.map((h) => (
+              <li class={h.depth === 3 ? 'pl-3.5' : ''}>
+                <a href={`#${h.slug}`} data-toc={h.slug} class="block text-slate-500 hover:text-white transition-colors">{h.text}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
       )}
-    </header>
 
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-12">
-      <div class="xl:col-span-9 max-w-4xl">
-        <section class="celestial-card !transform-none rounded-2xl p-6 sm:p-8 mb-14">
-          <h2 class="section-label mb-4">Abstract</h2>
-          <p class="text-slate-200 leading-relaxed font-light">{abstract}</p>
-        </section>
+      <!-- Body: middle 6 of 12 columns -->
+      <article class="lg:col-start-4 lg:col-span-6 min-w-0">
+        <p class="text-lg sm:text-xl text-slate-200 leading-relaxed">{abstract}</p>
 
-        <div class="paper">
+        {linkItems.length > 0 && (
+          <div class="flex flex-wrap gap-3 mt-8">
+            {linkItems.map(({ label, href, icon: Icon }, i) => (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:scale-[1.02] ${
+                  i === 0
+                    ? 'bg-white text-slate-950 hover:bg-slate-200'
+                    : 'bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/10'
+                }`}
+              >
+                <Icon class="w-4 h-4" />
+                <span>{label}</span>
+              </a>
+            ))}
+          </div>
+        )}
+
+        <div class="paper mt-14">
           <Content />
         </div>
-      </div>
 
-      {toc.length > 0 && (
-        <aside class="hidden xl:block xl:col-span-3">
-          <nav class="sticky top-28 border-l border-white/[0.08] pl-5">
-            <p class="section-label mb-4">Contents</p>
-            <ul class="space-y-2 text-sm">
-              {toc.map((h) => (
-                <li class={h.depth === 3 ? 'pl-4' : ''}>
-                  <a href={`#${h.slug}`} class="text-slate-400 hover:text-cyan-300 transition-colors">{h.text}</a>
-                </li>
+        <!-- Tags, authors, notes: rounded block like the reference page's citations box -->
+        <footer class="mt-20 rounded-2xl bg-white/[0.04] border border-white/[0.06] p-6 sm:p-8 flex flex-col gap-8">
+          {tags.length > 0 && (
+            <ul class="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <li class="text-xs font-mono px-3 py-1.5 rounded-xl bg-white/[0.05] text-slate-200">{tag}</li>
               ))}
             </ul>
-          </nav>
-        </aside>
-      )}
+          )}
+          <div>
+            <p class="text-sm text-slate-400 mb-2">Authors</p>
+            <p class="text-slate-100">{authors.join(', ')}</p>
+          </div>
+          <div>
+            <p class="text-sm text-slate-400 mb-2">Cite</p>
+            <p class="text-sm font-mono text-slate-300 break-words">
+              {authors.join(", ")}. "{title}." {pubDate.getUTCFullYear()}. {Astro.url.href}
+            </p>
+          </div>
+        </footer>
+      </article>
     </div>
-    </div>
-  </article>
+  </div>
+
+  <!-- More research -->
+  {more.length > 0 && (
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div class="flex items-baseline justify-between mb-8">
+        <h2 class="text-2xl font-bold text-white tracking-tight">More research</h2>
+        <a href="/#research" class="text-xs font-mono text-cyan-300 hover:text-white transition-colors">View all</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {more.map((p) => (
+          <a href={`/research/${p.id}`} class="celestial-card group rounded-2xl p-6 sm:p-8 flex flex-col">
+            <p class="text-xs font-mono text-slate-400 mb-4">{formatDate(p.data.pubDate)}</p>
+            <h3 class="text-lg sm:text-xl font-semibold text-white leading-snug group-hover:text-cyan-200 transition-colors">{p.data.title}</h3>
+            <span class="mt-6 inline-flex items-center gap-1.5 text-xs font-mono text-cyan-300">
+              Read <ArrowUpRight class="w-3.5 h-3.5" />
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
 </Layout>
 
+<script>
+  // Highlight the table-of-contents entry for the section currently in view.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('#paper-toc a[data-toc]'));
+  if (links.length > 0) {
+    const targets = links
+      .map((a) => document.getElementById(a.dataset.toc!))
+      .filter((el): el is HTMLElement => el !== null);
+
+    const setActive = (id: string) => {
+      for (const a of links) {
+        const on = a.dataset.toc === id;
+        a.classList.toggle('text-white', on);
+        a.classList.toggle('text-slate-500', !on);
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setActive(visible[0].target.id);
+      },
+      { rootMargin: '-20% 0px -70% 0px' }
+    );
+    targets.forEach((t) => observer.observe(t));
+    if (targets[0]) setActive(targets[0].id);
+  }
+</script>
+
 <style is:global>
-  /* Paper typography. Works for Markdown and for raw HTML (e.g. LaTeX converted with LaTeXML or pandoc). */
+  /* Article typography. Works for Markdown and for raw HTML (e.g. LaTeX converted with LaTeXML or pandoc). */
   .paper {
-    color: #cbd5e1;
+    color: #e2e8f0;
     font-size: 1.0625rem;
-    line-height: 1.85;
-    font-weight: 300;
+    line-height: 1.8;
   }
   .paper h1,
   .paper h2,
@@ -113,31 +174,25 @@ const linkItems = [
     scroll-margin-top: 7rem;
   }
   .paper h1 { font-size: 1.875rem; margin: 3rem 0 1rem; }
-  .paper h2 {
-    font-size: 1.5rem;
-    margin: 3.5rem 0 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-  .paper h3 { font-size: 1.2rem; margin: 2.25rem 0 0.75rem; color: #e2e8f0; }
-  .paper h4 { font-size: 1.05rem; margin: 1.75rem 0 0.5rem; color: #e2e8f0; }
+  .paper h2 { font-size: 1.625rem; margin: 3.5rem 0 1.25rem; }
+  .paper h3 { font-size: 1.25rem; margin: 2.5rem 0 0.75rem; }
+  .paper h4 { font-size: 1.05rem; margin: 1.75rem 0 0.5rem; }
   .paper > :first-child { margin-top: 0; }
-  .paper p { margin-bottom: 1.25rem; }
+  .paper p { margin-bottom: 1.5rem; }
   .paper strong { color: #ffffff; font-weight: 600; }
-  .paper em { color: #e2e8f0; }
-  .paper a { color: #67e8f9; text-decoration: underline; text-underline-offset: 4px; }
-  .paper a:hover { color: #a5f3fc; }
+  .paper a { color: #ffffff; text-decoration: underline; text-decoration-color: rgba(103, 232, 249, 0.6); text-underline-offset: 4px; }
+  .paper a:hover { text-decoration-color: #67e8f9; }
   .paper ul,
-  .paper ol { margin: 0 0 1.25rem 1.5rem; }
+  .paper ol { margin: 0 0 1.5rem 1.5rem; }
   .paper ul { list-style: disc; }
   .paper ol { list-style: decimal; }
-  .paper li { margin-bottom: 0.4rem; }
-  .paper li::marker { color: #67e8f9; }
+  .paper li { margin-bottom: 0.5rem; }
+  .paper li::marker { color: #94a3b8; }
   .paper blockquote {
-    border-left: 2px solid #67e8f9;
-    padding-left: 1rem;
-    color: #94a3b8;
-    margin: 1.75rem 0;
+    border-left: 2px solid rgba(255, 255, 255, 0.3);
+    padding-left: 1.25rem;
+    color: #cbd5e1;
+    margin: 2rem 0;
   }
   .paper code {
     background: rgba(255, 255, 255, 0.07);
@@ -145,7 +200,7 @@ const linkItems = [
     border-radius: 0.375rem;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 0.85em;
-    color: #7dd3fc;
+    color: #f8fafc;
   }
   .paper pre {
     background: #02040a;
@@ -153,35 +208,62 @@ const linkItems = [
     border-radius: 0.875rem;
     padding: 1.25rem;
     overflow-x: auto;
-    margin-bottom: 1.5rem;
+    margin: 2rem 0;
   }
-  .paper pre code { background: transparent; padding: 0; color: #f8fafc; }
+  .paper pre code { background: transparent; padding: 0; }
+
+  /* Tables and figures sit in a bordered box, like the reference page's charts */
   .paper table {
     display: block;
     overflow-x: auto;
     border-collapse: collapse;
-    margin: 2rem 0;
+    margin: 2.5rem 0;
+    padding: 1rem 1.25rem;
     font-size: 0.9375rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
   }
   .paper th,
   .paper td {
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     text-align: left;
   }
-  .paper th {
-    color: #ffffff;
-    font-weight: 600;
-    border-bottom-color: rgba(103, 232, 249, 0.35);
+  .paper tr:last-child td { border-bottom: 0; }
+  .paper figure table { margin: 0 0 0.5rem; padding: 0; border: 0; background: transparent; }
+  .paper th { color: #ffffff; font-weight: 600; border-bottom-color: rgba(255, 255, 255, 0.3); }
+  .paper figure {
+    margin: 2.5rem 0;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
   }
-  .paper img,
-  .paper figure { margin: 2rem auto; max-width: 100%; }
+  .paper img { max-width: 100%; border-radius: 0.5rem; margin: 2.5rem auto; }
+  .paper figure img { margin: 0 auto; }
   .paper figcaption { font-size: 0.875rem; color: #94a3b8; text-align: center; margin-top: 0.75rem; }
 
+  /* Author block at the top of a paper */
+  .paper .author-block { font-size: 0.95rem; line-height: 1.7; margin-bottom: 2.5rem; }
+  .paper .author-block strong { font-weight: 600; }
+  .paper .author-block sup { font-size: 0.7em; color: #94a3b8; margin-left: 1px; }
+  .paper .author-block .affil { color: #94a3b8; font-size: 0.875rem; }
+  .paper .author-block a { color: #cbd5e1; text-decoration-color: rgba(203, 213, 225, 0.4); }
+
+  /* Numbered reference list */
+  .paper ol.references { margin-left: 0; padding-left: 2.25rem; font-size: 0.9375rem; color: #cbd5e1; }
+  .paper ol.references li { margin-bottom: 0.9rem; scroll-margin-top: 7rem; }
+  .paper ol.references li:target { color: #ffffff; }
+  .paper ol.references li::marker { color: #67e8f9; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85em; }
+
+  /* Figures hold images that may have a light background */
+  .paper figure img { background: #ffffff; }
+
   /* KaTeX */
-  .paper .katex { color: #f1f5f9; font-size: 1.08em; }
+  .paper .katex { color: #f8fafc; font-size: 1.08em; }
   .paper .katex-display {
-    margin: 1.75rem 0;
+    margin: 2rem 0;
     padding: 0.75rem 0;
     overflow-x: auto;
     overflow-y: hidden;

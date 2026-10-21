@@ -103,7 +103,15 @@
   transform: none;
 }
 
-/* Editorial section label, e.g. "01 — About" */
+/* Slightly lighter, solid-ish panel placed behind running text so the starfield never competes with it */
+.text-panel {
+  background: rgba(13, 19, 36, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
+}
+
+/* Editorial section label, e.g. "01 — Research" */
 .section-label {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.75rem;

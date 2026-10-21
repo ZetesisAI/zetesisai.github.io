@@ -8,13 +8,13 @@
 
 站点只有两类页面：
 
-- **主页** `/`：五个板块，依次为主视觉（星轨动效）、简介、研究方向详解、最近研究、团队与联系方式。顶部 `New:` 横幅自动指向最新一篇论文。
+- **主页** `/`：三个板块，依次为主视觉（星轨动效）、最近研究、团队与联系方式。顶部 `New:` 横幅自动指向最新一篇论文。
 - **论文页** `/research/<slug>`：每篇论文一个页面，支持 LaTeX 数学公式（构建时由 KaTeX 渲染为 HTML）。
 
 ```text
 src/
 ├── components/
-│   ├── home/                 # 主页五个板块：Hero / Intro / Approach / RecentResearch / Team
+│   ├── home/                 # 主页三个板块：Hero / RecentResearch / Team
 │   ├── AnnouncementBar.astro # 顶部 "New:" 横幅
 │   ├── Header.astro / Footer.astro / Starfield.astro
 ├── content/papers/           # 论文 (Markdown + LaTeX 公式)
